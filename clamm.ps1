@@ -615,7 +615,10 @@ class TraderBot {
         $checked_offer = $this.CheckOffer($offer_string)
         
         if($checked_offer.isProfitable){
-
+            Write-Host ""
+            Write-Host "Offer has $($checked_offer.yProfit) of $($this.token_y) profit" -ForegroundColor Green
+            Write-Host "Offer has $($checked_offer.xProfit) of XCH profit" -ForegroundColor Green
+            Write-Host ""
             # Take profitable offer
             $take_offer = $this.TakeOffer($checked_offer)
             
