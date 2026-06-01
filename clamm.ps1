@@ -846,7 +846,11 @@ class TraderBot {
     # }
 
 
-    longrun([decimal]$tibet_X_amount=0.2){
+    longrun(){
+        $this.longrun(0.2)
+    }
+
+    longrun([decimal]$tibet_X_amount){
         if($tibet_X_amount -lt 0){
             throw "You must set the tibet_x_amount to be a decimal number greater than 0."
         }
