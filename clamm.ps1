@@ -906,7 +906,9 @@ class TraderBot {
             }
             Write-Host ""
             Write-Host "-------------------------------------------------" -ForegroundColor Cyan
-            
+            Write-Host "Checking Tibet Offers XCH -> $($this.token_y)" -ForegroundColor Cyan
+            Write-Host ""
+
             try{
                 $tibxch = $this.GetTibetQuoteFromX($tibet_X_amount)
                 
@@ -914,24 +916,35 @@ class TraderBot {
                 
                 $tiby = $this.GetTibetQuoteFromY($tby)
                 $tbx = ($tiby.amount_out / 1000000000000)
-                Write-Host "Checking Tibet Offers XCH -> $($this.token_y)" -ForegroundColor Cyan
-                Write-Host "Tibetswap offers [ $($tby) $($this.token_y) ]for [ $($tibet_X_amount) XCH ]"
                 $checkx = $this.CheckTibetQuote($tibxch)
-                
                 $checky = $this.CheckTibetQuote($tiby)
                 if($checkx.isProfitable){
-                    Write-Host "This offer is has $($checkx.yProfit) $($this.token_y) of Profit."
+                    Write-Host "Tibetswap offers [ $($tby) $($this.token_y) ] for [ $($tibet_X_amount) XCH ]"  -ForegroundColor Green
+                    Write-Host "This offer is has $($checkx.yProfit) $($this.token_y) of Profit." -ForegroundColor Green
                     $this.AttemptTibetOffer($checkx)
                     Write-Host "-------------------------------------------------" -ForegroundColor Cyan
                     Write-Host ""
                 } else {
-                    if($checky.isProfitable){
-                        Write-Host "Checking Tibet Offers $($this.token_y) -> XCH" -ForegroundColor Cyan
-                        Write-Host "Tibetswap offers [ $($tbx) XCH ]for [ $($checky.xProfit) $($this.token_y) ]"   
-                        $this.AttemptTibetOffer($checky)
-                        Write-Host "-------------------------------------------------" -ForegroundColor Cyan
-                        Write-Host ""
-                    }
+                    Write-Host "Tibetswap offers [ $($tby) $($this.token_y) ] for [ $($tibet_X_amount) XCH ]"  -ForegroundColor Red
+                    Write-Host "This offer is not profitable." -ForegroundColor Red
+                    Write-Host "-------------------------------------------------" -ForegroundColor Cyan
+                    Write-Host ""
+                }
+                Write-Host ""
+                Write-Host "-------------------------------------------------" -ForegroundColor Cyan
+                Write-Host "Checking Tibet Offers $($this.token_y) -> XCH" -ForegroundColor Cyan
+                if($checky.isProfitable){
+                    
+                    Write-Host "Tibetswap offers [ $($tbx) XCH ] for [ $($tby) $($this.token_y) ]" -ForegroundColor Green
+                    Write-Host "This offer is has $($checky.xProfit) XCH of Profit." -ForegroundColor Green
+                    $this.AttemptTibetOffer($checky)
+                    Write-Host "-------------------------------------------------" -ForegroundColor Cyan
+                    Write-Host ""
+                } else {
+                    Write-Host "Tibetswap offers [ $($tbx) XCH ] for [ $($tby) $($this.token_y) ]" -ForegroundColor Red
+                    Write-Host "This offer is not profitable." -ForegroundColor Red
+                    Write-Host "-------------------------------------------------" -ForegroundColor Cyan
+                    Write-Host ""
                 }
             } catch {
                 Write-Error "Exception: $($_.Exception.Message)" 
