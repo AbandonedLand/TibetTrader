@@ -846,7 +846,10 @@ class TraderBot {
     # }
 
 
-    longrun(){
+    longrun([decimal]$tibet_X_amount=0.2){
+        if($tibet_X_amount -lt 0){
+            throw "You must set the tibet_x_amount to be a decimal number greater than 0."
+        }
         while($true){
             try{
                 $sell = ($this.Adjust_X_Amount(-1)).dy
@@ -876,7 +879,7 @@ class TraderBot {
             try{
                 $this.HandleDexieFromX()
             } catch {
-                Write-Host "Exception: $($_.Exception.Message)" 
+                Write-Error "Exception: $($_.Exception.Message)" 
             }   
 
             
@@ -884,21 +887,41 @@ class TraderBot {
             try{
                 $this.HandleDexieFromY()
             } catch {
-                Write-Host "Exception: $($_.Exception.Message)" 
+                Write-Error "Exception: $($_.Exception.Message)" 
             }
-            # Write-Host ""
-            # Write-Host "-------------------------------------------------" -ForegroundColor Cyan
-            # Write-Host "Checking Tibet Offers XCH->$($this.token_y)" -ForegroundColor Cyan
+            Write-Host ""
+            Write-Host "-------------------------------------------------" -ForegroundColor Cyan
+            Write-Host "Checking Tibet Offers XCH->$($this.token_y)" -ForegroundColor Cyan
             
-            # try{
-            #     $tibxch = $this.GetTibetQuoteFromX(0.1)
-            #     $tiby = $this.GetTibetQuoteFromY(0.25)
-            #     Write-Host "Checking Tibet Offers XCH->$($this.token_y)" -ForegroundColor Cyan
-            #     Write-Host "Tibetswap offers [ $(($tibxch.amount_out)/1000) $($this.token_y) ]for [ 0.1 XCH ]"
-            #     $test
-            # } catch {
-
-            # }
+            try{
+                $tibxch = $this.GetTibetQuoteFromX($tibet_X_amount)
+                
+                $tby = ($tibxch.amount_out/1000)
+                
+                $tiby = $this.GetTibetQuoteFromY($tby)
+                $tbx = ($tiby.amount_out / 1000000000000)
+                Write-Host "Checking Tibet Offers XCH -> $($this.token_y)" -ForegroundColor Cyan
+                Write-Host "Tibetswap offers [ $($tby) $($this.token_y) ]for [ $($tibet_X_amount) XCH ]"
+                $checkx = $this.CheckTibetQuote($tibxch)
+                
+                $checky = $this.CheckTibetQuote($tiby)
+                if($checkx.isProfitable){
+                    Write-Host "This offer is has $($checkx.yProfit) $($this.token_y) of Profit."
+                    $this.AttemptTibetOffer($checkx)
+                    Write-Host "-------------------------------------------------" -ForegroundColor Cyan
+                    Write-Host ""
+                } else {
+                    if($checky.isProfitable){
+                        Write-Host "Checking Tibet Offers $($this.token_y) -> XCH" -ForegroundColor Cyan
+                        Write-Host "Tibetswap offers [ $($tbx) XCH ]for [ $($checky.xProfit) $($this.token_y) ]"   
+                        $this.AttemptTibetOffer($checky)
+                        Write-Host "-------------------------------------------------" -ForegroundColor Cyan
+                        Write-Host ""
+                    }
+                }
+            } catch {
+                Write-Error "Exception: $($_.Exception.Message)" 
+            }
             
 
             
