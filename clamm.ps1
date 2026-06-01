@@ -723,22 +723,33 @@ class TraderBot {
             Remove-SageOffer -offer_id $offer.offer_id
             return $false
         }
-        Write-Host "offer submitted to tibetswap, waiting 5 sec to test"
+        Write-Host "Offer submitted to tibetswap." -ForegroundColor Yellow
         start-sleep 5
         $trackedOffer = Get-SageOffer -offer_id $offer.offer_id
+        Write-Host "Checking offer Status..." -ForegroundColor Yellow
+        Write-Host "Status: $($trackedOffer.status)" -ForegroundColor Yellow
         while($trackedOffer.status -eq "active"){
             Start-Sleep 10
             $trackedOffer = Get-SageOffer -offer_id $offer.offer_id
+            Write-Host "Checking offer Status..." -ForegroundColor Yellow
+            Write-Host "Status: $($trackedOffer.status)" -ForegroundColor Yellow
         }
         if($trackedOffer.status -eq "completed"){
             $this.CommitTrade($checked_quote)
+            Write-Host "Tibet Trade Successful!" -ForegroundColor Green
             return $true
         } else {
-            start-sleep 60
+            Write-Host "Something happened.  Waiting 60 seconds and checking again." -ForegroundColor Red
+            Write-Host "Status: $($trackedOffer.status)" -ForegroundColor Red
+            Start-Sleep 60
             $trackedOffer = Get-SageOffer -offer_id $offer.offer_id
+            Write-Host "Status: $($trackedOffer.status)" -ForegroundColor Red
             if($trackedOffer.status -eq "completed"){
+                Write-Host "Trade shows as completed now." -ForegroundColor Green
                 $this.CommitTrade($checked_quote)
                 return $true
+            } else {
+                Write-Host "Trade Failed.. offer should expire on it's own." -ForegroundColor Red
             }
         }
         return $false
