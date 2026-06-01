@@ -906,7 +906,6 @@ class TraderBot {
             }
             Write-Host ""
             Write-Host "-------------------------------------------------" -ForegroundColor Cyan
-            Write-Host "Checking Tibet Offers XCH->$($this.token_y)" -ForegroundColor Cyan
             
             try{
                 $tibxch = $this.GetTibetQuoteFromX($tibet_X_amount)
