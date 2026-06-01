@@ -579,7 +579,7 @@ class TraderBot {
 
     [bool]TakeOffer($checked_offer){
         Write-Host "Trying to take an offer with TakeOffer()"
-        $pretrade_y = ((get-sagecats).cats | Where-Object {$_.asset_id -eq $($this.token_y_id)}).selectable_balance
+        $pretrade_y = ((get-sagecats).cats | Where-Object {$_.asset_id -eq $($this.token_y_id)}).balance
         Write-Host "PreTrade TokenY = $($pretrade_y)"
         $read = read-sageoffer -offer $checked_offer.offer
         if($read.status -eq "active"){
@@ -597,7 +597,7 @@ class TraderBot {
                 $count = (Get-SagePendingTransactions).count
             }
             
-            $posttrade_y = ((get-sagecats).cats | Where-Object {$_.asset_id -eq $($this.token_y_id)}).selectable_balance
+            $posttrade_y = ((get-sagecats).cats | Where-Object {$_.asset_id -eq $($this.token_y_id)}).balance
             Write-Host "Offer has completed. Post Trade TokenY = $($posttrade_y)"
             # This is a stupid way to check, but need to do some troubleshooting.
             if($pretrade_y -ne $posttrade_y){
@@ -886,7 +886,21 @@ class TraderBot {
             } catch {
                 Write-Host "Exception: $($_.Exception.Message)" 
             }
+            # Write-Host ""
+            # Write-Host "-------------------------------------------------" -ForegroundColor Cyan
+            # Write-Host "Checking Tibet Offers XCH->$($this.token_y)" -ForegroundColor Cyan
             
+            # try{
+            #     $tibxch = $this.GetTibetQuoteFromX(0.1)
+            #     $tiby = $this.GetTibetQuoteFromY(0.25)
+            #     Write-Host "Checking Tibet Offers XCH->$($this.token_y)" -ForegroundColor Cyan
+            #     Write-Host "Tibetswap offers [ $(($tibxch.amount_out)/1000) $($this.token_y) ]for [ 0.1 XCH ]"
+            #     $test
+            # } catch {
+
+            # }
+            
+
             
             Write-Host "Waiting 30 seconds"
             start-sleep 30
