@@ -54,5 +54,10 @@ Give your bot a name: <name>
 ```powershell
 $bot = Import-TraderBot -botName <name>
 $bot.longrun()
+
+
+# You can set the amount to attempt on tibetswap in XCH. 
+# 
+# $bot.longrun(0.1)
 ```
 
