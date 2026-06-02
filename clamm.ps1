@@ -960,6 +960,15 @@ class TraderBot {
         }
     }
 
+    refresh(){}
+
+
+    nats(){
+        nats sub "chia.$($this.token_y_id)" -Raw | ForEach-Object {
+            $this.HandleOffer($_)
+        }
+    }
+
 }
 
 
@@ -990,3 +999,13 @@ function New-TraderBot{
     $bot = [TraderBot]::Build()
     return $bot
 }
+
+function Start-NatsBot($botName,$channel){
+    . ./clamm.ps1
+    nats subscribe "chia.$($channel)" --raw | ForEach-Object{
+        $bot = [TraderBot]::Import($botName)
+        $bot.CheckOffer($_)
+        
+    }
+}
+
